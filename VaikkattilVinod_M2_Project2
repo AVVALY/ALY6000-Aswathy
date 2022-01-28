@@ -1,0 +1,130 @@
+#1 "Plotting Basics: Vaikkattil Vinod Aswathy"
+
+print("Plotting Basics: Vaikkattil Vinod Aswathy")
+
+#2 Installing and Importing the packages
+
+install.packages(c("FSA","FSAdata","magrittr","dplyr","plotrix","ggplot2","moments"))
+library(FSA)
+library(FSAdata)
+library(magrittr)
+library(dplyr)
+library(plotrix)
+library(ggplot2)
+library(moments)
+
+#3 Load BullTroutRML2 dataset 
+
+BullTroutRML2
+str(BullTroutRML2)
+summary(BullTroutRML2)
+
+#4 Print the first and last 3 records from the BullTroutRMS2 dataset
+
+head(BullTroutRML2, 1)
+tail(BullTroutRML2, 3)
+
+rbind(head(BullTroutRML2, 1),tail(BullTroutRML2, 3))
+
+#5 Remove all records except those from Harrison Lake
+
+RevisedBullTroutRML2 <- filterD(BullTroutRML2, BullTroutRML2$lake == "Harrison")
+RevisedBullTroutRML2
+
+#6 Display the first and last 5 records from the filtered BullTroutRML2 dataset
+
+head(RevisedBullTroutRML2, 1)
+tail(RevisedBullTroutRML2, 5)
+
+rbind(head(RevisedBullTroutRML2, 1), tail(RevisedBullTroutRML2, 5))
+
+#7 Display the structure of the filtered BullTroutRML2dataset
+
+str(RevisedBullTroutRML2)
+
+#8 Display the summary of the filtered BullTroutRML2dataset
+
+summary(RevisedBullTroutRML2)
+
+#9 Create a scatterplot for “age” (y variable) and “fl” (x variable)
+
+plot(RevisedBullTroutRML2$fl,RevisedBullTroutRML2$age, main = "Plot 1: Harrison Lake Trout", 
+     xlim = c(0,500), ylim = c(0,15), 
+     xlab = "Fork Length (mm)", ylab = "Age (yrs)", 
+     col = "#0073C2FF", pch = 16) 
+
+# 10 Plot an “Age” histogram with the following specifications
+
+hist(RevisedBullTroutRML2$age, xlab = "Age (yrs)", col = "cadetblue",
+     xlim = c (0,15), ylim = c(0,15), 
+     main = "Plot 2: Harrison Fish Age Distribution", col.main = "cadetblue")
+
+# 11 Create an overdense plot using the same specifications as the previous scatterplot
+
+p <- ggplot(RevisedBullTroutRML2, aes(x=fl,y=age)) + xlab("Fork Length(mm)") +
+  ylab("Age(yrs)") + ggtitle("Plot 3: Harrison Density Shaded by Era") +
+  xlim(0,500) + ylim(0,15) +
+  geom_point(size=5,alpha=0.50,color = "#3A7108")
+p
+ 
+# 12 Create a new object called “tmp” that includes the first 3 and last 3 records of the BullTroutRML2 data set.
+
+a <- head(RevisedBullTroutRML2, n=3)
+b <- tail(RevisedBullTroutRML2, n=3)
+rbind(a,b)
+
+tmp <- rbind(a,b)
+tmp
+       
+# 13 Display the “era” column (variable) in the new “tmp” object
+
+tmp[,c('era'), drop = FALSE]
+
+# 14 Create a pchs vector with the argument values for + and x ####
+
+pchs <- c("+","x")
+pchs
+
+# 15 Create a cols vector with the two elements “red” and “gray60”
+
+cols <- c("red","gray60")
+cols
+
+# 16 Convert the tmp era values to numeric values
+
+tmp$era<-as.numeric(tmp$era)
+tmp$era
+class(tmp$era)
+
+# 17 Initialize the cols vector with the tmp era values ####
+
+cols <- c(tmp$era)
+cols
+
+# 18 Create a plot of “Age (yrs)” (y variable) versus “Fork Length (mm)” (x variable)
+
+plot(tmp$fl, tmp$age, main = "Plot 4: Symbols & Color by Era", xlim = c(0,500), ylim = c(0,15), xlab = "Fork Length (mm)", ylab = "Age (yrs)", pch = pchs, col = cols)
+
+# 19 Plot a regression line overlay on Plot 4 and title the new graph “Plot 5: Regression Overlay”
+
+plot(tmp$fl, tmp$age, main = "Plot 5: Regression Overlay", xlim = c(0,500), ylim = c(0,15), xlab = "Fork Length (mm)", ylab = "Age (yrs)", pch = pchs, col = cols)
+abline(lm(tmp$age~tmp$fl), col="blue")
+
+# 20 Place a legend of on Plot 5 and call the new graph “Plot 6: :Legend Overlay"
+
+plot(tmp$fl, tmp$age, main = "Plot 6: Legend Overlay", xlim = c(0,500), ylim = c(0,15), xlab = "Fork Length (mm)", ylab = "Age (yrs)", pch = pchs, col = cols)
+abline(lm(tmp$age~tmp$fl), col="blue")
+legend("top",c("1977-80", "1997-01"), cex = 1, inset = 0.001, title = "Era",box.col = "orange",bg= "pink")
+
+# Descriptive statistical data
+
+summary(BullTroutRML2)
+cor(BullTroutRML2$age,BullTroutRML2$fl)
+skewness(BullTroutRML2$age)
+skewness(BullTroutRML2$fl)
+kurtosis(BullTroutRML2$age)
+kurtosis(BullTroutRML2$fl)
+sd(BullTroutRML2$age)
+sd(BullTroutRML2$fl)
+boxplot(BullTroutRML2$age)
+boxplot(BullTroutRML2$fl)

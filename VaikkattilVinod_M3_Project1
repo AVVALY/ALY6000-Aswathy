@@ -1,0 +1,149 @@
+# 1. Print your name at the top of the script and load these libraries: FSA, FSAdata, magrittr, dplyr, tidyr plyr and tidyverse
+
+print("VaikkattilVinodAswathy_M3_Project3")
+
+
+install.packages("FSA","FSAdata","magrittr","dplyr","tidyr","plyr","tidyverse")
+
+library(FSA)
+library(FSAdata)
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+
+# 2. Import the inchBio.csv and name the table <bio>
+
+bio <- read_csv("//Users//aswathyvinod//Downloads//inchBio.csv", header = TRUE, sep= ",")
+bio
+
+
+# 3. Display the head, tail and structure of <bio> 
+
+str(bio)
+head(bio)
+tail(bio)
+
+# 4. Create an object, <counts>, that counts and lists all the species records 
+
+counts<-bio %>% select(species)
+list(counts)
+count(counts)
+
+# 5. Display just the 8 levels (names) of the species 
+
+unique(bio$species)
+
+# 6. Create a <tmp> object that displays the different species and the number of record of each species in the dataset. Include this information in your report
+ 
+tmp <- bio %>% count("species")
+tmp
+
+# 7. Create a subset, <tmp2>, of just the species variable and display the first five records
+
+tmp2 <- subset.data.frame(bio, select = "species")
+head(tmp2,5)
+
+# 8. Create a table, <w>, of the species variable. Display the class of w
+
+w <- table(bio$species)
+w
+class(w)
+
+# 9. Convert <w> to a data frame named <t> and display the results
+
+t <- as.data.frame(w)
+t
+class(t)
+
+# 10. Extract and display the frequency values from the <t> data frame
+
+t$Freq
+
+# 11. Create a table named <cSpec> from the bio species attribute (variable) and confirm that you created a table which displays the number of species in the dataset <bio>
+
+cSpec <- table(bio$species)
+cSpec
+
+# 12. Create a table named <cSpecPct> that displays the species and percentage of records for each species. Confirm you created a table class.
+
+cSpecPct <- prop.table(cSpec)*100
+cSpecPct
+class(cSpecPct)
+
+# 13. Convert the table, <cSpecPct>, to a data frame named <u> and confirm that <u> is a data frame
+
+u <- as.data.frame(cSpecPct)
+u
+class(u)
+
+# 14. Create a barplot of <cSpec> with the following: titled Fish Count
+
+
+barplot(cSpec, main = "Fish count", xlab = "SPECIES", ylab = "COUNTS", col = "lightgreen",
+        cex.axis = 0.9, cex.names =0.6,cex.lab = 1.5, las = 2)
+
+# 15. Create a barplot of <cSpecPct>
+
+barplot(cSpecPct/10, main = "Fish Relative Frequency", ylim = c(0,4), ylab = "FREQUENCY OF EACH SPECIES",xlab = "SPECIES", col.lab = "lightblue", col = "LIGHTGREEN")
+
+# 16. Rearrange the <u> cSpec Pct data frame in descending order of relative frequency. Save the rearranged data frame as the object <d>
+
+d <- u[order(-u$Freq),]
+d
+
+# 17. Rename the <d> columns Var 1 to Species, and Freq to RelFreq
+
+colnames(d)
+names(d)[1] <- "Species"
+names(d)[2] <- "RelFreq"
+d
+
+# 18. Add new variables to <d> and call them cumfreq, counts, and cumcounts 
+
+d<-transform(d,cumfreq=cumsum(d$RelFreq))
+dcounts<-as.data.frame(tmp[order(-tmp$freq),])
+d<-transform(d,count=dcounts$freq)
+d<-transform(d,cumcount=cumsum(count))
+d
+
+# 19. Create a parameter variable <def_par> to store parameter variables  
+
+def_par <- par() 
+def_par
+
+#  20. Create a barplot, <pc>
+
+pc <- barplot(d$count, width = 1, space = .15, border = FALSE, axes = F,
+              ylim = c(0,3.05*max(d$count, na.rm = TRUE)), ylab = "Cummulative Counts",
+              cex.names =0.7,names.arg = d$Species,main = "Species Pareto",cex.lab = 1.5, las = 2, 
+              col = "blue")
+
+# 21. Add a cumulative counts line to the <pc> plot
+
+lines(pc,d$cumcount,type ="b",cex = 0.7,pch=20,col="cyan4")
+
+# 22. Place a grey box around the pareto plot
+
+box(col="grey62")
+
+
+# 23. Add a left side axis
+
+axis(side = 2,at=c(0,d$cumcount),tick = TRUE,las = 1,col.axis="grey62",
+     col = "grey62",
+     cex.axis = 0.8)
+
+# 24. Add axis details on right side of box
+
+axis(side = 4,at=c(0,d$cumcount),labels = paste(c(0,round(d$cumfreq)),"%",sep = ""),
+     las=1, col.axis = "cyan4",col.lab = "cyan4",cex.axis=0.8)
+
+
+# 25. Display the finished Species Pareto Plot (without the star watermarks). Have your last name on the plot
+
+
+axis(side = 4,at=c(0,d$cumcount),labels = paste(c(0,round(d$cumfreq)),"%",sep = ""),
+     las=1, col.axis = "cyan4",col.lab = "cyan4",cex.axis=0.8)
+legend("topleft", c("Aswathy Vaikkattil Vinod"))

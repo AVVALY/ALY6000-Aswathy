@@ -1,0 +1,197 @@
+print("Aswathy Vaikkattil Vinod Final Project")
+
+# Installing Package
+
+install.packages("FSA","FSAdata","magrittr","dplyr","tidyr","plyr","tidyverse","ggplot2")
+install.packages("psych")
+install.packages("vtable")
+install.packages("hrbrthemes")
+install.packages("gapminder")
+install.packages("ggthemes") 
+installed.packages("cowplot")
+install.packages("skimr")
+library(skimr)
+library(hrbrthemes)
+library(gapminder)
+library(babynames)
+library(FSA)
+library(FSAdata)
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(plyr)
+library(tidyverse)
+library(ggplot2)
+library(psych)
+library(vtable)
+
+# loading dataset
+
+sales <-  read.csv("//Users//aswathyvinod//Desktop//Analytics//vgsales.csv", header = TRUE, sep = ",")
+sales
+
+# Summarizing the data in a table
+
+skim(sales)
+sumtable(sales)
+
+# Reducing the length from 16600 to 6000
+
+sales <- sales[0:6000, ]
+sales
+summary(sales)
+st(sales)
+describe(sales, fast = TRUE)
+
+# Graphical representation
+
+sales$year <- as.numeric(sales$Year)
+sales$year
+summary(sales$year)
+
+# Drop NAs data clean
+
+sales <- na.omit(sales)
+sales
+summary(sales)
+st(sales)
+
+# 1 sales by year (summarizing the variables in dataset with graphical representation)
+
+attach(sales)
+ggplot(sales, aes(year)) + 
+  geom_bar(fill = "blue") +
+  ggtitle("Video Game sales by Year")
+ 
+
+# 2 Global sales per platform for each year
+
+ggplot(subset(sales, Platform %in% c("DS","2600","GB","NG", "PS2", "PS3", "Wii", "X360", "PSP", "PS", "PC", "XB", "GBA", "GC", "3DS")), 
+       aes(x=Year, y=Global_Sales, fill=Platform))+
+  ggtitle("Multiple barplot of global sales per year shown by platforms")+
+  geom_bar(stat="identity")+
+  labs(x="Year", y="Global Sales")
+
+# 3 barplot freq for platform
+
+plataformFreq <- data.frame(sort(table(sales$Platform), increasing = TRUE))
+
+ggplot(plataformFreq, aes(x=Var1, y=Freq, fill=Var1))+
+  ggtitle("Frequency Barplot of Platform")+
+  xlab("Platform")+
+  ylab("Frequency") +
+geom_bar(stat="identity")
+
+# 4 Multiple region sales per year
+
+ggplot(subset(sales, year %in% c("1980", "1990", "2000", "2010","2020")), aes(x=year, y=NA_Sales,  fill=year))+
+  ggtitle("Barplot of North America sales per year")+
+  geom_bar(stat="identity")+
+  labs(x="Year", y="NA sales")
+
+ggplot(subset(sales, year %in% c("1980", "1990", "2000", "2010","2020")), aes(x=year, y=EU_Sales,  fill=year))+
+  ggtitle("Barplot of Europe sales per year")+
+  geom_bar(stat="identity")+
+  labs(x="Year", y="EU sales")
+  
+ggplot(subset(sales, year %in% c("1980", "1990", "2000", "2010","2020")), aes(x=year, y=JP_Sales,  fill=year))+
+  ggtitle("Barplot of Japan sales per year")+
+  geom_bar(stat="identity")+
+  labs(x="Year", y="JP sales")
+  
+ggplot(subset(sales, year %in% c("1980", "1990", "2000", "2010","2020")), aes(x=year, y=Other_Sales,  fill=year))+
+  ggtitle("Barplot of Other region sales per year")+
+  geom_bar(stat="identity")+
+  labs(x="Year", y="Other sales")
+
+# 5 Frequency of Genre
+
+genreFreq <- data.frame(sort(table(sales$Genre), increasing = TRUE))
+ggplot(genreFreq, aes(x=Var1, y=Freq, fill=Var1))+
+  ggtitle("Highest Trending Genere")+
+  xlab("Genre")+
+  ylab("Frequency")+ coord_flip() +
+  geom_bar(stat="identity")
+  
+# 6 Boxplot
+
+boxplot(sales$year, col = "orange", main = "Boxplot of Sales in the year 1980 to 2020", xlab = "Years", horizontal = TRUE,notch = TRUE)
+
+# Removing Outlier
+
+boxplot.stats(sales$year)$out
+
+out <- boxplot.stats(sales$year)$out
+out_rm <- which(sales$year%in% c(out))
+out_rm
+
+sales <- sales[-c(out_rm), ]
+sales
+summary(sales)
+
+# 7 with out outliers
+
+boxplot(sales1$year, col = "orange", main = "Sales in the year 1980 to 2020", xlab = "Years", horizontal = TRUE, notch = TRUE)
+
+
+# Adding new variable 
+
+salesnew <- read.csv("//Users//aswathyvinod//Desktop//Analytics//vgsales.csv", header = TRUE, sep = ",")
+salesnew
+
+summary(salesnew)
+
+salesnew <- salesnew[0:6000, ]
+salesnew <- na.omit(salesnew)
+salesnew
+str(salesnew)
+describe(sales, fast = TRUE)
+
+# pie chart for percentage
+
+library(plotrix)
+
+percentage <- c(4393, 2435, 1292, 800)
+lab <- paste0(round(percentage/sum(percentage) * 100, 2), "%")
+pie3D(percentage, 
+      col = hcl.colors(length(percentage), "Spectral"),
+      labels = lab, explode = 0.1, main = "Percentage of Sales per Region") 
+legend("topleft", c("North America", "Europe","Japan", "Other"), 
+       cex = 0.8, fill = hcl.colors(length(percentage), "Spectral"))
+
+# Frequency Attribute
+
+freq_year <- data.frame(cbind(Frequency = table(sales$Year), Percent = prop.table(table(sales$Year)) * 100))
+freq_year <- freq_year[order(freq_year$Frequency, decreasing=TRUE), ]
+freq_year
+
+options(repr.plot.width = 14, repr.plot.height = 10)
+
+df <- head(freq_year, 10)
+a <- ggplot(data = df, mapping = aes(x = Frequency, y = row.names(df))) +
+  geom_bar(stat = "identity", mapping = aes(fill = row.names(df), color = row.names(df)), alpha = .6, size = 1.1) +
+  geom_label(mapping = aes(label=Frequency), fill = "white", size = 5, color = "black", fontface = "bold", hjust=.6) +
+  ggtitle("Top 10 frequent years") +
+  xlab("") +
+  ylab("Years") +
+  theme_ipsum() +
+  theme(plot.background = element_rect(color = "black", size = 1.1),
+        legend.position = "topleft")
+a
+
+df1 <- tail(freq_year, 10)
+b <- ggplot(data = df1, mapping = aes(x = Frequency, y = row.names(df1))) +
+  geom_bar(stat = "identity", mapping = aes(fill = row.names(df1), color = row.names(df1)), alpha = .6, size = 1.1) +
+  geom_label(mapping = aes(label=Frequency), fill = "white", size = 5, color = "black", fontface = "bold", hjust=.6) +
+  ggtitle("Least frequent years") +
+  xlab(" ") +
+  ylab("Years") +
+  theme_ipsum() +
+  theme(plot.background = element_rect(color = "blue", size = 1.1),
+        legend.position = "Topleft")
+      
+b
+
+# Descriptive analysis of the newvariable
+
+summary(freq_year)
